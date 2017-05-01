@@ -2,6 +2,7 @@ import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import ReactDOM,{ render } from 'react-dom';
 import Survey from 'survey-react';
+import SurveyEditor from 'surveyjs-editor';
  
 import App from '../imports/ui/App.jsx';
 
@@ -17,18 +18,28 @@ var surveyJSON = { title: "Tell us, what technologies do you use?", pages: [
     { type: "comment", name: "about", title: "Please tell us about your main requirements for Survey library" } ] }
  ]
 }
+var editor;
 
 Meteor.startup(() => {
   render(<App />, document.getElementById('render-target'));
   Survey.Survey.cssType = "bootstrap";
    render(
-  <Survey.SurveyWindow json={surveyJSON} onComplete={sendDataToServer}/>,
+  <Survey.Survey json={surveyJSON} onComplete={sendDataToServer}/>,
   document.getElementById("surveyContainer")); 
+  var editorOptions = {showEmbededSurveyTab: true}; //see examples below
+	editor = new SurveyEditor.SurveyEditor("surveyEditorContainer", editorOptions);
+	//set function on save callback
+	editor.saveSurveyFunc = saveMySurvey;
 });
 
 function sendDataToServer(survey) {
   var resultAsString = JSON.stringify(survey.data);
   alert(resultAsString); //send Ajax request to your web server.
+}
+
+function saveMySurvey(){
+  var yourNewSurveyJSON = editor.text;
+  //send updated json in your storage  
 }
 
 
